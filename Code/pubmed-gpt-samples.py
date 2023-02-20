@@ -51,4 +51,6 @@ for name, group in jr_df_grouped:
 
 jr_df_sample.to_csv(data_dir + "journal-sample.csv")
 
-# segment data does not need to be sampled
+# segment data just needs legend and word count added
+abs_df["word_count"] = abs_df["abstract"].str.split().str.len()
+abs_df.to_csv(data_dir + "abstracts.csv")
