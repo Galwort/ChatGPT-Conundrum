@@ -20,20 +20,23 @@ plt.ylabel("Number of Abstracts")
 plt.title("Real published extracts evaluated by AI generated text detector")
 plt.savefig(viz_dir + "Years.png")
 
-# repeating the above but making it 3D
-fig = plt.figure(figsize=(20, 10))
-ax = fig.add_subplot(111, projection="3d")
-for i, (name, group) in enumerate(yr_df_sample.groupby("Legend")):
-    xs = group["year_range"]
-    ys = group["Legend"]
-    zs = 1
-    ax.bar(xs, zs, zs=ys, zdir="y", color=colors[i], alpha=0.8)
+# by year, 3d
+yr_df_sample = read_csv(data_dir + "year-sample.csv")
+groups = yr_df_sample.groupby(["year_range", "Legend"]).size().unstack()
+
+fig, ax = plt.subplots(figsize=(15, 10))
+
+bottom = None
+for i, col in enumerate(groups.columns):
+    ax.bar(groups.index, groups[col], bottom=bottom, color=colors[i], width=0.5, zorder=3-i)
+    bottom = groups[col] if bottom is None else bottom + groups[col]
 
 ax.set_xlabel("Year Range")
-ax.set_ylabel("Legend")
-ax.set_zlabel("Number of Abstracts")
+ax.set_xticks(groups.index)
+ax.set_ylabel("Number of Abstracts")
 ax.set_title("Real published extracts evaluated by AI generated text detector")
-plt.savefig(viz_dir + "Years-3D.png")
+
+plt.savefig(viz_dir + "3D_Stacked_Bar.png")
 
 # by journal
 jr_df_sample = read_csv(data_dir + "journal-sample.csv")
