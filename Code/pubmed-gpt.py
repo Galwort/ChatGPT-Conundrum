@@ -123,8 +123,8 @@ def get_abstracts(url):
 url_df = make_url(journals, 1980, 2023)
 
 # if the abstracts.csv file exists, delete it
-if path.exists("abstracts.csv"):    
-    remove("abstracts.csv")
+if path.exists("Data/abstracts.csv"):    
+    remove("Data/abstracts.csv")
 
 dt_start = datetime.now()
 tot_abs = 0

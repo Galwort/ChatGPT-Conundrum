@@ -1,12 +1,19 @@
 from pandas import read_csv
+from os import getcwd
 
-abs_df = read_csv("abstracts.csv")
-abs_df = abs_df[abs_df["segment"] == 1]
-abs_df["word_count"] = abs_df["abstract"].str.split().str.len()
+dir = getcwd()
+data_dir = dir.replace("Code", "Data\\")
+tbl_dir = dir.replace("Code", "Tables\\")
 
-abs_df_words = abs_df.pivot_table(index="year_range", columns="journal", aggfunc="mean", values="word_count")
-# print(abs_df_words)
+# importing sample data
+yr_df_sample = read_csv(data_dir + "year-sample.csv")
+jr_df_sample = read_csv(data_dir + "journal-sample.csv")
+abs_df = read_csv(data_dir + "abstracts.csv")
 
-abs_df_chars = abs_df.pivot_table(index="year_range", columns="journal", aggfunc="mean", values="characters")
-# print(abs_df_chars)
+# creating pivots
+yr_df_sample.pivot_table(index="year_range", columns="Legend", aggfunc="size").to_csv("Pivots/year-pivot.csv")
+jr_df_sample.pivot_table(index="journal", columns="Legend", aggfunc="size").to_csv("Pivots/journal-pivot.csv")
+abs_df.pivot_table(index="segment", columns="Legend", aggfunc="size").to_csv("Pivots/segment-pivot.csv")
 
+# word counts
+word_df = abs_df.pivot_table(index="year_range", columns="journal", aggfunc="mean", values="word_count")
