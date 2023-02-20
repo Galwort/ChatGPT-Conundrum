@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from pandas import read_csv
-from numpy import zeros
+from numpy import arange, meshgrid, zeros_like
 from os import getcwd
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -12,25 +12,25 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#a5a5a5']
 # by year
 yr_df_sample = read_csv(data_dir + "year-sample.csv")
 yr_groups = yr_df_sample.groupby(["year_range", "Legend"]).size().unstack()
-x = range(len(yr_groups.index))
-y = range(len(yr_groups.columns))
-z = zeros((len(yr_groups.index), len(yr_groups.columns)))
-dx = 0.5
-dy = 0.5
-dz = yr_groups.values
 
-fig = plt.figure(figsize=(10, 10))
+fig = plt.figure(figsize=(15, 10))
 ax = fig.add_subplot(111, projection='3d')
 
-for i in range(len(x)):
-    for j in range(len(y)):
-        ax.bar3d(x[i], y[j], z[i, j], dx, dy, dz[i, j], color=colors[j], zsort='average')
+xpos = arange(len(yr_groups.index))
+ypos = arange(len(yr_groups.columns))
+xpos, ypos = meshgrid(xpos, ypos)
+
+zpos = zeros_like(xpos)
+dz = yr_groups.values
+
+for i, col in enumerate(yr_groups.columns):
+    ax.bar3d(xpos.ravel(), ypos.ravel(), zpos.ravel(), 0.5, 0.5, dz.ravel(), color=colors[i])
 
 ax.set_xlabel("Year Range")
-ax.set_xticks(x)
+ax.set_xticks(arange(len(yr_groups.index)))
 ax.set_xticklabels(yr_groups.index)
 ax.set_ylabel("Legend")
-ax.set_yticks(y)
+ax.set_yticks(arange(len(yr_groups.columns)))
 ax.set_yticklabels(yr_groups.columns)
 ax.set_zlabel("Number of Abstracts")
 ax.set_title("Real published extracts evaluated by AI generated text detector")
