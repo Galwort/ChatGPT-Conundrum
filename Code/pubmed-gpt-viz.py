@@ -8,7 +8,7 @@ viz_dir = dir.replace("Code", "Graphs\\")
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#a5a5a5']
 
 # by year
-yr_df_sample = read_csv("year-sample.csv")
+yr_df_sample = read_csv(data_dir + "year-sample.csv")
 yr_df_sample.groupby(["year_range", "Legend"]).size().unstack().plot(
     kind="bar", stacked=True, color=colors, figsize=(20, 10)
 )
