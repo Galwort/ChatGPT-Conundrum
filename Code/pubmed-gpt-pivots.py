@@ -41,12 +41,14 @@ for jr in abs_df["journal"].unique():
         )
         bt_df = concat([bt_df, x_df], ignore_index=True)
 
-bt_df = bt_df.round(4)
 bt_pivot = bt_df.pivot_table(
     index="year_range",
     columns="journal",
-    values=["word_count","t_statistic","p_value"]
+    values=["word_count","t_statistic","p_value"],
+    margins=True,
+    margins_name="Total"
 )
+bt_pivot = bt_pivot.round(4)
 bt_pivot.columns = [f"{k} {j}" for j, k in bt_pivot.columns]
 bt_pivot = bt_pivot.reindex(sorted(bt_pivot.columns), axis=1)
 bt_pivot.to_csv(tbl_dir + "statistics-pivot.csv")
