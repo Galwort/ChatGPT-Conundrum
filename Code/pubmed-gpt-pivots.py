@@ -2,6 +2,8 @@ from pandas import read_csv, DataFrame, concat
 from os import getcwd
 from scipy import stats
 
+# testing auto sync
+
 dir = getcwd()
 data_dir = dir.replace("Code", "Data\\")
 tbl_dir = dir.replace("Code", "Tables\\")
