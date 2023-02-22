@@ -37,16 +37,62 @@ for jr in abs_df["journal"].unique():
         )
         x_df = DataFrame(
             {"year_range": yr, "journal": jr, "word_count": wc, "t_statistic": ts, "p_value": pv},
-            index=[0],
+            index=[0]
         )
         bt_df = concat([bt_df, x_df], ignore_index=True)
+
+yr_tot_df = DataFrame(columns=["year_range","journal","word_count","t_statistic","p_value"])
+for yr in abs_df["year_range"].unique():
+    ptr_df = abs_df.loc[abs_df["year_range"] == yr]
+    otr_df = abs_df.loc[abs_df["year_range"] != yr]
+    wc = ptr_df["word_count"].mean()
+    ts, pv = stats.ttest_ind(
+        ptr_df["score"],
+        otr_df["score"],
+        equal_var=False
+    )
+    x_df = DataFrame(
+        {"year_range": yr, "journal": "Total", "word_count": wc, "t_statistic": ts, "p_value": pv},
+        index=[0]
+    )
+    yr_tot_df = concat([yr_tot_df, x_df], ignore_index=True)
+bt_df = concat([bt_df, yr_tot_df], ignore_index=True)
+
+jr_tot_df = DataFrame(columns=["year_range","journal","word_count","t_statistic","p_value"])
+for jr in abs_df["journal"].unique():
+    ptr_df = abs_df.loc[abs_df["journal"] == jr]
+    otr_df = abs_df.loc[abs_df["journal"] != jr]
+    wc = ptr_df["word_count"].mean()
+    ts, pv = stats.ttest_ind(
+        ptr_df["score"],
+        otr_df["score"],
+        equal_var=False
+    )
+    x_df = DataFrame(
+        {"year_range": "Total", "journal": jr, "word_count": wc, "t_statistic": ts, "p_value": pv},
+        index=[0]
+    )
+    jr_tot_df = concat([jr_tot_df, x_df], ignore_index=True)
+bt_df = concat([bt_df, jr_tot_df], ignore_index=True)
+
+ptr_df = abs_df
+otr_df = abs_df
+wc = ptr_df["word_count"].mean()
+ts, pv = stats.ttest_ind(
+    ptr_df["score"],
+    otr_df["score"],
+    equal_var=False
+)
+tot_df = DataFrame(
+    {"year_range": "Total", "journal": "Total", "word_count": wc, "t_statistic": ts, "p_value": pv},
+    index=[0]
+)
+bt_df = concat([bt_df, tot_df], ignore_index=True)
 
 bt_pivot = bt_df.pivot_table(
     index="year_range",
     columns="journal",
-    values=["word_count","t_statistic","p_value"],
-    margins=True,
-    margins_name="Total"
+    values=["word_count","t_statistic","p_value"]
 )
 bt_pivot = bt_pivot.round(4)
 bt_pivot.columns = [f"{k} {j}" for j, k in bt_pivot.columns]
