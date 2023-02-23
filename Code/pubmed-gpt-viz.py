@@ -55,9 +55,8 @@ for i in range(yr_grouped.shape[1]-1):
 plt.savefig(viz_dir + "Years-3D.png")
 
 # by journal
-jr_df_sample = read_csv(data_dir + "journal-sample.csv")
 jr_grouped = (
-    jr_df_sample.groupby(["journal", "Legend"]).size().unstack()
+    yr_df_sample.groupby(["journal", "Legend"]).size().unstack()
 ).reset_index()
 tick_labels = jr_grouped["journal"].astype(str)
 jr_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
@@ -94,11 +93,17 @@ plt.savefig(viz_dir + "Journals-3D.png")
 
 # by segment
 abs_df = read_csv(data_dir + "abstracts.csv")
-abs_grouped = (
-    abs_df.groupby(["segment", "Legend"]).size().unstack()
+seg_df_sample = abs_df.merge(
+    yr_df_sample[["article_url", "year_range", "url"]],
+    on=["article_url", "year_range", "url"],
+    how="inner",
+)
+seg_grouped = (
+    seg_df_sample.groupby(["segment", "Legend"]).size().unstack()
 ).reset_index()
-tick_labels = abs_grouped["segment"].astype(str)
-abs_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
+seg_grouped["segment"] = seg_grouped["segment"].astype(str)
+tick_labels = seg_grouped["segment"].astype(str)
+seg_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
 
 plt.xlabel("Segment")
 plt.xticks(range(len(tick_labels)), tick_labels, rotation=0)
@@ -111,21 +116,21 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
 
 ax.set_xlabel("Segment")
-ax.set_xticklabels(abs_grouped["segment"])
+ax.set_xticklabels(seg_grouped["segment"])
 ax.set_zlabel("Abstracts")
 ax.set_ylim3d(0,10)
 
-dz = zeros(abs_grouped.shape[0])
-for i in range(abs_grouped.shape[1]-1):
+dz = zeros(seg_grouped.shape[0])
+for i in range(seg_grouped.shape[1]-1):
     ax.bar3d(
-        abs_grouped.index, # starting point for x
+        seg_grouped.index, # starting point for x
         1, # starting point for y
         dz, # starting point for z
         0.5, # width of bar
         0.5, # depth of bar
-        abs_grouped.iloc[:, i+1], # height of bar
+        seg_grouped.iloc[:, i+1], # height of bar
         color=colors[i]
     )
-    dz += abs_grouped.iloc[:, i+1]
+    dz += seg_grouped.iloc[:, i+1]
 
 plt.savefig(viz_dir + "Segments-3D.png")
