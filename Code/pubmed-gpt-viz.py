@@ -47,7 +47,7 @@ new_order = [
     "Greater than 50% chance of being AI generated",
     "Less than 50% chance of being AI generated",
 ]
-yr_grouped = a.reindex(columns=new_order)
+yr_grouped = yr_grouped.reindex(columns=new_order)
 
 tick_labels = yr_grouped["year_range"].astype(str)
 yr_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
