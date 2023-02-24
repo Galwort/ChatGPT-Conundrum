@@ -7,6 +7,15 @@ dir = getcwd()
 data_dir = dir.replace("Code", "Data\\")
 viz_dir = dir.replace("Code", "Graphs\\")
 
+abs_df = read_csv(data_dir + "abstracts.csv")
+abs_1_df = abs_df[abs_df["segment"] == 1]
+
+abs_1_df["word_count"].plot(kind="hist", bins=100, figsize=(20, 10))
+plt.xlabel("Word Count")
+plt.ylabel("Number of Abstracts")
+plt.title("Distribution of Abstract Word Counts")
+plt.savefig(viz_dir + "word-count-distribution.png")
+
 colors = [
     "#1f77b4", # blue
     "#ff7f0e", # orange
@@ -38,7 +47,7 @@ new_order = [
     "Greater than 50% chance of being AI generated",
     "Less than 50% chance of being AI generated",
 ]
-yr_grouped = yr_grouped.reindex(columns=new_order)
+yr_grouped = a.reindex(columns=new_order)
 
 tick_labels = yr_grouped["year_range"].astype(str)
 yr_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
@@ -120,7 +129,6 @@ for i in range(jr_grouped.shape[1]-1):
 plt.savefig(viz_dir + "Journals-3D.png")
 
 # by segment
-abs_df = read_csv(data_dir + "abstracts.csv")
 seg_df_sample = abs_df.merge(
     yr_df_sample[["article_url", "year_range", "url"]],
     on=["article_url", "year_range", "url"],
