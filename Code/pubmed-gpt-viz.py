@@ -29,7 +29,7 @@ colors = [
 yr_df_sample = read_csv(data_dir + "year-sample.csv")
 
 leg_rep = {
-    "Over 50% chance of being real": "Less than 50% chance of being AI generated",
+    "Over 50% chance of being real": "Greater than 50% chance of real",
     "Less than 20% chance of being real": "Greater than 80% chance of being AI generated",
     "Less than 10% chance of being real": "Greater than 90% chance of being AI generated",
     "Less than 50% chance of being real": "Greater than 50% chance of being AI generated",
@@ -45,7 +45,7 @@ new_order = [
     "Greater than 70% chance of being AI generated",
     "Greater than 60% chance of being AI generated",
     "Greater than 50% chance of being AI generated",
-    "Less than 50% chance of being AI generated",
+    "Greater than 50% chance of real",
 ]
 yr_grouped = yr_grouped.reindex(columns=new_order)
 
@@ -84,6 +84,15 @@ plt.savefig(viz_dir + "Years.png")
 
 # by journal
 jr_grouped = yr_df_sample.groupby(["journal", "Legend"]).size().unstack()
+
+new_order = [
+    "Greater than 90% chance of being AI generated",
+    "Greater than 80% chance of being AI generated",
+    "Greater than 70% chance of being AI generated",
+    "Greater than 60% chance of being AI generated",
+    "Greater than 50% chance of being AI generated",
+    "Greater than 50% chance of real",
+]
 
 jr_grouped = jr_grouped.reindex(columns=new_order)
 tick_labels = jr_grouped.index.astype(str)
@@ -125,12 +134,11 @@ seg_df_sample = abs_df.merge(
     on=["article_url", "year_range", "url"],
     how="inner",
 )
-seg_df_sample["Legend"] = seg_df_sample["Legend"].replace(leg_rep)
-seg_grouped = seg_df_sample.groupby(["segment", "Legend"]).size().unstack()
-
-seg_grouped = seg_grouped.reindex(columns=new_order)
-seg_grouped.index = seg_grouped.index.astype(str)
-tick_labels = seg_grouped.index.astype(str)
+seg_grouped = (
+    seg_df_sample.groupby(["segment", "Legend"]).size().unstack()
+).reset_index()
+seg_grouped["segment"] = seg_grouped["segment"].astype(str)
+tick_labels = seg_grouped["segment"].astype(str)
 seg_grouped.plot(kind="bar", stacked=True, color=colors, figsize=(20, 10))
 
 plt.xlabel("Segment")
